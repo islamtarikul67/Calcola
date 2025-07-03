@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Scatola</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .gradient-button {
+            background-image: linear-gradient(to right, #8A2BE2, #00CED1);
+            transition: all 0.3s ease;
+        }
+        .gradient-button:hover {
+            box-shadow: 0 0 15px rgba(0, 206, 209, 0.6);
+        }
+        .active-toggle {
+            background-color: #00CED1;
+            color: #1a202c;
+        }
+        .inactive-toggle {
+            background-color: transparent;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen py-8">
+
+    <div class="w-full max-w-md mx-auto bg-[#2d3748] rounded-2xl shadow-2xl p-8 border border-gray-700">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-white">Calcolo <span class="text-[#00CED1]">Scatola</span></h1>
+            <div class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-lg border border-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#00CED1]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14L4 7m0 0v10l8 4m0-14L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Toggle Buttons -->
+        <div class="flex bg-gray-700 rounded-lg p-1 mb-6">
+            <button id="btnNormale" class="w-1/2 p-2 rounded-md text-sm font-medium transition-all duration-300 active-toggle">Normale</button>
+            <button id="btnInverso" class="w-1/2 p-2 rounded-md text-sm font-medium transition-all duration-300 inactive-toggle">Inverso</button>
+        </div>
+
+        <!-- Form -->
+        <div id="form-container" class="space-y-4">
+            <!-- Campi per modalità Normale -->
+            <div id="normale-mode-fields">
+                <div>
+                    <label id="labelInput1Normale" for="input1Normale" class="flex items-center text-sm font-medium text-gray-300 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                        Pezzi Totali
+                    </label>
+                    <input type="number" id="input1Normale" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-[#00CED1] focus:border-[#00CED1] outline-none transition" placeholder="Es. 1000">
+                </div>
+                <div class="mt-4">
+                    <label id="labelInput2Normale" for="input2Normale" class="flex items-center text-sm font-medium text-gray-300 mb-2">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1.362l-2.224 1.589A1.5 1.5 0 006 7.22V10H4a1 1 0 00-1 1v2a1 1 0 001 1h12a1 1 0 001-1v-2a1 1 0 00-1-1h-2V7.22a1.5 1.5 0 00-.776-1.33L11 4.362V3a1 1 0 00-1-1zm0 4a.5.5 0 01.25.066l2.224 1.588A.5.5 0 0112.25 8H7.75a.5.5 0 01-.224-.447L9.75 6.066A.5.5 0 0110 6z" clip-rule="evenodd" /></svg>
+                        Pezzi per Scatola
+                    </label>
+                    <input type="number" id="input2Normale" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-[#00CED1] focus:border-[#00CED1] outline-none transition" placeholder="Es. 25">
+                </div>
+            </div>
+
+            <!-- Campi per modalità Inversa -->
+            <div id="inverso-mode-fields" class="hidden space-y-4">
+                <div>
+                    <label for="scatoleComplete" class="flex items-center text-sm font-medium text-gray-300 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                        Scatole Complete
+                    </label>
+                    <input type="number" id="scatoleComplete" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-[#00CED1] focus:border-[#00CED1] outline-none transition" placeholder="Es. 40">
+                </div>
+                <div>
+                    <label for="pezziPerScatolaInverso" class="flex items-center text-sm font-medium text-gray-300 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1.362l-2.224 1.589A1.5 1.5 0 006 7.22V10H4a1 1 0 00-1 1v2a1 1 0 001 1h12a1 1 0 001-1v-2a1 1 0 00-1-1h-2V7.22a1.5 1.5 0 00-.776-1.33L11 4.362V3a1 1 0 00-1-1zm0 4a.5.5 0 01.25.066l2.224 1.588A.5.5 0 0112.25 8H7.75a.5.5 0 01-.224-.447L9.75 6.066A.5.5 0 0110 6z" clip-rule="evenodd" /></svg>
+                        Pezzi per Scatola
+                    </label>
+                    <input type="number" id="pezziPerScatolaInverso" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-3 focus:ring-2 focus:ring-[#00CED1] focus:border-[#00CED1] outline-none transition" placeholder="Es. 25">
+                </div>
+                <div id="incomplete-boxes-container" class="space-y-3">
+                    <!-- I campi per le scatole incomplete verranno aggiunti qui -->
+                </div>
+                <button id="addIncompleteBox" class="w-full flex items-center justify-center text-sm font-semibold text-[#00CED1] bg-gray-800 hover:bg-gray-900 rounded-lg p-2 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Aggiungi Scatola Incompleta
+                </button>
+            </div>
+        </div>
+
+        <!-- Calculate Button -->
+        <div class="mt-8">
+            <button id="calcolaBtn" class="w-full gradient-button text-white font-bold py-3 rounded-lg text-lg">
+                CALCOLA
+            </button>
+        </div>
+
+        <!-- Result Display -->
+        <div id="resultArea" class="mt-6 text-center text-white hidden">
+            <p id="resultText" class="text-lg"></p>
+            <p id="resultValue" class="text-3xl font-bold text-[#00CED1]"></p>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <p class="text-xs text-gray-500">&copy; 2025 Hoque Mohammed Tarikul. Tutti i diritti riservati.</p>
+        </div>
+    </div>
+
+    <script>
+        // Elementi del DOM
+        const btnNormale = document.getElementById('btnNormale');
+        const btnInverso = document.getElementById('btnInverso');
+        const calcolaBtn = document.getElementById('calcolaBtn');
+        const resultArea = document.getElementById('resultArea');
+        const resultText = document.getElementById('resultText');
+        const resultValue = document.getElementById('resultValue');
+
+        const normaleModeFields = document.getElementById('normale-mode-fields');
+        const inversoModeFields = document.getElementById('inverso-mode-fields');
+        const addIncompleteBoxBtn = document.getElementById('addIncompleteBox');
+        const incompleteBoxesContainer = document.getElementById('incomplete-boxes-container');
+
+        let currentMode = 'normale'; // 'normale' o 'inverso'
+        let incompleteBoxCount = 0;
+
+        function clearInputs() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => input.value = '');
+            incompleteBoxesContainer.innerHTML = '';
+            incompleteBoxCount = 0;
+            resultArea.classList.add('hidden');
+        }
+
+        function updateUI() {
+            clearInputs();
+            if (currentMode === 'normale') {
+                btnNormale.classList.add('active-toggle');
+                btnNormale.classList.remove('inactive-toggle');
+                btnInverso.classList.add('inactive-toggle');
+                btnInverso.classList.remove('active-toggle');
+
+                normaleModeFields.classList.remove('hidden');
+                inversoModeFields.classList.add('hidden');
+            } else { // Modalità Inversa
+                btnInverso.classList.add('active-toggle');
+                btnInverso.classList.remove('inactive-toggle');
+                btnNormale.classList.add('inactive-toggle');
+                btnNormale.classList.remove('active-toggle');
+
+                normaleModeFields.classList.add('hidden');
+                inversoModeFields.classList.remove('hidden');
+            }
+        }
+
+        function addIncompleteBoxField() {
+            incompleteBoxCount++;
+            const newField = document.createElement('div');
+            newField.classList.add('flex', 'items-center', 'space-x-2');
+            newField.innerHTML = `
+                <div class="flex-grow">
+                    <label for="incomplete-${incompleteBoxCount}" class="text-sm font-medium text-gray-400">Scatola Incompleta #${incompleteBoxCount}</label>
+                    <input type="number" id="incomplete-${incompleteBoxCount}" class="incomplete-box-input w-full bg-gray-700 border border-gray-600 text-white rounded-lg p-2 mt-1 focus:ring-2 focus:ring-[#00CED1] focus:border-[#00CED1] outline-none transition" placeholder="Pezzi">
+                </div>
+                <button type="button" class="remove-box-btn mt-6 p-2 bg-red-500/20 text-red-400 hover:bg-red-500/40 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            `;
+            incompleteBoxesContainer.appendChild(newField);
+
+            newField.querySelector('.remove-box-btn').addEventListener('click', () => {
+                newField.remove();
+            });
+        }
+
+        function calculate() {
+            resultArea.classList.remove('hidden');
+
+            if (currentMode === 'normale') {
+                const pezziTotali = parseFloat(document.getElementById('input1Normale').value);
+                const pezziPerScatola = parseFloat(document.getElementById('input2Normale').value);
+
+                if (isNaN(pezziTotali) || isNaN(pezziPerScatola) || pezziTotali <= 0 || pezziPerScatola <= 0) {
+                    resultText.textContent = 'Per favore, inserisci valori validi.';
+                    resultValue.textContent = '';
+                    return;
+                }
+                
+                const scatoleNecessarie = Math.ceil(pezziTotali / pezziPerScatola);
+                const scatoleComplete = Math.floor(pezziTotali / pezziPerScatola);
+                const pezziRimanenti = pezziTotali % pezziPerScatola;
+
+                resultText.textContent = 'Risultato Calcolo';
+                let resultHTML = `<span class="font-bold text-2xl">${scatoleNecessarie}</span> scatole totali`;
+                if (pezziRimanenti > 0) {
+                    resultHTML += `<br><span class="text-base font-normal text-gray-300">(${scatoleComplete} complete e 1 con ${pezziRimanenti} pezzi)</span>`;
+                }
+                resultValue.innerHTML = resultHTML;
+
+            } else { // Modalità Inversa
+                const scatoleComplete = parseFloat(document.getElementById('scatoleComplete').value);
+                const pezziPerScatola = parseFloat(document.getElementById('pezziPerScatolaInverso').value);
+
+                if (isNaN(scatoleComplete) || isNaN(pezziPerScatola) || scatoleComplete < 0 || pezziPerScatola <= 0) {
+                    resultText.textContent = 'Inserisci valori validi per scatole e pezzi.';
+                    resultValue.textContent = '';
+                    return;
+                }
+
+                let totalIncompletePieces = 0;
+                let validationError = false;
+                const incompleteInputs = document.querySelectorAll('.incomplete-box-input');
+                
+                incompleteInputs.forEach(input => {
+                    const value = parseFloat(input.value);
+                    if (isNaN(value) || value < 0) {
+                        validationError = true;
+                    }
+                    if (value >= pezziPerScatola) {
+                        validationError = true;
+                        resultText.textContent = `Una scatola incompleta non può avere ${pezziPerScatola} o più pezzi.`;
+                        resultValue.textContent = '';
+                    }
+                    totalIncompletePieces += value;
+                });
+
+                if (validationError) {
+                    if (!resultValue.textContent) { // Evita di sovrascrivere il messaggio di errore specifico
+                         resultText.textContent = 'Controlla i valori delle scatole incomplete.';
+                    }
+                    return;
+                }
+
+                const result = (scatoleComplete * pezziPerScatola) + totalIncompletePieces;
+                resultText.textContent = 'Hai un totale di';
+                resultValue.textContent = `${result} pezzi`;
+            }
+        }
+
+        // Event Listeners
+        btnNormale.addEventListener('click', () => {
+            currentMode = 'normale';
+            updateUI();
+        });
+        btnInverso.addEventListener('click', () => {
+            currentMode = 'inverso';
+            updateUI();
+        });
+        addIncompleteBoxBtn.addEventListener('click', addIncompleteBoxField);
+        calcolaBtn.addEventListener('click', calculate);
+
+        // Inizializza l'interfaccia
+        updateUI();
+    </script>
+
+</body>
+</html>
