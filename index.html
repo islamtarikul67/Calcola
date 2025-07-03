@@ -36,7 +36,7 @@
 </head>
 <body class="flex items-center justify-center min-h-screen py-8">
 
-    <div class="w-full max-w-md mx-auto bg-[#2d3748] rounded-2xl shadow-2xl p-8 border border-gray-700">
+    <div class="w-full max-w-md mx-auto bg-[#2d3748] rounded-2xl shadow-2xl p-8 border border-gray-700 relative">
         
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
@@ -114,10 +114,22 @@
             <p id="resultText" class="text-lg"></p>
             <p id="resultValue" class="text-3xl font-bold text-[#00CED1]"></p>
         </div>
+        
+        <!-- Reset Button -->
+        <div class="mt-4">
+            <button id="resetBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 rounded-lg transition-colors">
+                Reset
+            </button>
+        </div>
 
         <!-- Footer -->
-        <div class="text-center mt-8">
+        <div class="text-center mt-6">
             <p class="text-xs text-gray-500">&copy; 2025 Hoque Mohammed Tarikul. Tutti i diritti riservati.</p>
+        </div>
+
+        <!-- Version Number -->
+        <div class="absolute bottom-4 right-4">
+             <p class="text-xs text-gray-600">v1.1.0</p>
         </div>
     </div>
 
@@ -126,6 +138,7 @@
         const btnNormale = document.getElementById('btnNormale');
         const btnInverso = document.getElementById('btnInverso');
         const calcolaBtn = document.getElementById('calcolaBtn');
+        const resetBtn = document.getElementById('resetBtn'); // Bottone Reset
         const resultArea = document.getElementById('resultArea');
         const resultText = document.getElementById('resultText');
         const resultValue = document.getElementById('resultValue');
@@ -237,7 +250,9 @@
                         resultText.textContent = `Una scatola incompleta non può avere ${pezziPerScatola} o più pezzi.`;
                         resultValue.textContent = '';
                     }
-                    totalIncompletePieces += value;
+                    if(!validationError) {
+                        totalIncompletePieces += value;
+                    }
                 });
 
                 if (validationError) {
@@ -264,6 +279,7 @@
         });
         addIncompleteBoxBtn.addEventListener('click', addIncompleteBoxField);
         calcolaBtn.addEventListener('click', calculate);
+        resetBtn.addEventListener('click', clearInputs); // Aggiunto listener per il reset
 
         // Inizializza l'interfaccia
         updateUI();
