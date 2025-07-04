@@ -20,9 +20,10 @@
             --secondary-accent: #8A2BE2;
             --toggle-active-bg: #00CED1;
             --toggle-active-text: #1a202c;
-            --menu-bg: #374151; /* Grigio scuro per menu */
+            --menu-bg: #374151;
             --menu-border: #4b5563;
             --menu-hover-bg: rgba(255, 255, 255, 0.1);
+            --error-color: #F87171; /* red-400 */
         }
 
         .theme-light {
@@ -93,7 +94,7 @@
         }
         .form-input {
             background-color: var(--input-bg);
-            border-color: var(--border-color);
+            border: 1px solid var(--border-color);
             color: var(--text-color);
         }
         .form-input::placeholder {
@@ -101,6 +102,11 @@
         }
         .form-input:focus {
             --tw-ring-color: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+        .input-error {
+            border-color: var(--error-color) !important;
+            --tw-ring-color: var(--error-color) !important;
         }
         .text-primary { color: var(--primary-accent); }
         .text-muted { color: var(--text-muted-color); }
@@ -129,11 +135,11 @@
             <h1 class="text-2xl font-bold">Calcolo <span class="text-primary">Scatola</span></h1>
             <div class="flex items-center space-x-2">
                 <!-- Theme Switcher -->
-                <div class="relative group">
+                <div class="relative">
                     <button id="theme-btn" class="p-2 rounded-full hover:bg-subtle transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h8a2 2 0 002-2v-4a2 2 0 00-2-2h-8a2 2 0 00-2 2v4a2 2 0 002 2z"></path></svg>
                     </button>
-                    <div id="theme-menu" class="absolute right-0 mt-2 w-32 border rounded-lg shadow-xl p-2 hidden group-focus-within:block focus-within:block">
+                    <div id="theme-menu" class="absolute right-0 mt-2 w-32 border rounded-lg shadow-xl p-2 hidden z-10">
                         <button data-theme="theme-dark" class="theme-option w-full text-left px-3 py-1.5 text-sm rounded-md">Scuro</button>
                         <button data-theme="theme-light" class="theme-option w-full text-left px-3 py-1.5 text-sm rounded-md">Chiaro</button>
                         <button data-theme="theme-blue" class="theme-option w-full text-left px-3 py-1.5 text-sm rounded-md">Blu</button>
@@ -210,7 +216,7 @@
 
         <div class="flex justify-between items-center mt-6">
             <p class="text-xs text-muted">&copy; 2025 Hoque Mohammed Tarikul</p>
-            <p class="text-xs text-muted">v1.2.3</p>
+            <p class="text-xs text-muted">v1.2.6</p>
         </div>
     </div>
 
@@ -226,6 +232,8 @@
         const inversoModeFields = document.getElementById('inverso-mode-fields');
         const addIncompleteBoxBtn = document.getElementById('addIncompleteBox');
         const incompleteBoxesContainer = document.getElementById('incomplete-boxes-container');
+        const themeBtn = document.getElementById('theme-btn');
+        const themeMenu = document.getElementById('theme-menu');
         const themeOptions = document.querySelectorAll('.theme-option');
         const soundToggleBtn = document.getElementById('sound-toggle-btn');
         const soundOnIcon = document.getElementById('sound-on-icon');
@@ -252,15 +260,15 @@
             gainNode.connect(audioCtx.destination);
             
             gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
 
             if (type === 'click') {
+                gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01);
                 oscillator.type = 'triangle';
                 oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); 
             } else if (type === 'success') {
+                gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
                 oscillator.type = 'sine';
                 oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
                 setTimeout(() => {
                     const o2 = audioCtx.createOscillator();
                     const g2 = audioCtx.createGain();
@@ -269,33 +277,43 @@
                     o2.type = 'sine';
                     o2.frequency.setValueAtTime(783.99, audioCtx.currentTime); // G5
                     g2.gain.setValueAtTime(0, audioCtx.currentTime);
-                    g2.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.01);
-                    o2.start();
-                    g2.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
-                    o2.stop(audioCtx.currentTime + 0.2);
-                }, 100);
+                    g2.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
+                    o2.start(audioCtx.currentTime + 0.05);
+                    g2.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.25);
+                    o2.stop(audioCtx.currentTime + 0.25);
+                }, 50);
+            } else if (type === 'error') {
+                gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.01);
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
             }
             
             oscillator.start();
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
-            oscillator.stop(audioCtx.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.2);
+            oscillator.stop(audioCtx.currentTime + 0.2);
         }
         
         // --- UI Logic ---
         function setFormContainerHeight() {
-            if (currentMode === 'normale') {
-                formContainer.style.minHeight = `${normaleModeFields.offsetHeight}px`;
-            } else {
-                formContainer.style.minHeight = `${inversoModeFields.offsetHeight}px`;
-            }
+            requestAnimationFrame(() => {
+                if (currentMode === 'normale') {
+                    formContainer.style.minHeight = `${normaleModeFields.offsetHeight}px`;
+                } else {
+                    formContainer.style.minHeight = `${inversoModeFields.offsetHeight}px`;
+                }
+            });
         }
 
         function clearInputs() {
-            document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.value = '';
+                input.classList.remove('input-error');
+            });
             incompleteBoxesContainer.innerHTML = '';
             incompleteBoxCount = 0;
             resultArea.classList.add('hidden', 'opacity-0');
             resultArea.innerHTML = '';
+            setFormContainerHeight();
         }
 
         function updateUI() {
@@ -317,7 +335,7 @@
                 normaleModeFields.classList.add('hidden');
                 inversoModeFields.classList.remove('hidden');
             }
-            requestAnimationFrame(setFormContainerHeight);
+            setFormContainerHeight();
         }
 
         function addIncompleteBoxField() {
@@ -338,9 +356,9 @@
             newField.querySelector('.remove-box-btn').addEventListener('click', (e) => {
                 playSound('click');
                 e.currentTarget.parentElement.remove();
-                requestAnimationFrame(setFormContainerHeight);
+                setFormContainerHeight();
             });
-            requestAnimationFrame(setFormContainerHeight);
+            setFormContainerHeight();
         }
 
         function showResult(htmlContent) {
@@ -353,82 +371,102 @@
 
         function calculate() {
             let success = false;
-            let resultHTML = '';
+            let validationError = false;
+            resultArea.classList.add('hidden', 'opacity-0');
+            document.querySelectorAll('.form-input').forEach(i => i.classList.remove('input-error'));
+
 
             if (currentMode === 'normale') {
-                const pezziTotali = parseFloat(document.getElementById('input1Normale').value);
-                const pezziPerScatola = parseFloat(document.getElementById('input2Normale').value);
+                const pezziTotaliInput = document.getElementById('input1Normale');
+                const pezziPerScatolaInput = document.getElementById('input2Normale');
+                const pezziTotali = parseFloat(pezziTotaliInput.value);
+                const pezziPerScatola = parseFloat(pezziPerScatolaInput.value);
 
-                if (isNaN(pezziTotali) || isNaN(pezziPerScatola) || pezziTotali <= 0 || pezziPerScatola <= 0) {
-                    resultHTML = `<div class="bg-subtle p-4 rounded-lg text-center text-red-400">Per favore, inserisci valori validi.</div>`;
-                } else {
+                if (isNaN(pezziTotali) || pezziTotali <= 0) {
+                    pezziTotaliInput.classList.add('input-error');
+                    validationError = true;
+                }
+                if (isNaN(pezziPerScatola) || pezziPerScatola <= 0) {
+                    pezziPerScatolaInput.classList.add('input-error');
+                    validationError = true;
+                }
+
+                if (!validationError) {
                     const scatoleNecessarie = Math.ceil(pezziTotali / pezziPerScatola);
                     const scatoleComplete = Math.floor(pezziTotali / pezziPerScatola);
                     const pezziRimanenti = pezziTotali % pezziPerScatola;
                     
                     let breakdownHTML = '';
-                    if (pezziRimanenti > 0) {
+                    if (pezziRimanenti > 0 && scatoleComplete > 0) {
                         breakdownHTML = `
                             <div class="border-t border-white/10 my-4"></div>
                             <div class="flex justify-around items-center text-muted">
                                 <div class="text-center">
-                                    <svg class="w-8 h-8 mx-auto mb-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14L4 7m0 0v10l8 4m0-14L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                    <svg class="w-8 h-8 mx-auto mb-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14L4 7m0 0v10l8 4m0-14L4 7m8 4v10M4 7v10l8 4"></path></svg>
                                     <p class="text-xl font-semibold text-color">${scatoleComplete}</p>
                                     <p class="text-xs uppercase">Complete</p>
                                 </div>
                                 <div class="text-center">
-                                    <svg class="w-8 h-8 mx-auto mb-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7l8 4 8-4"></path><path stroke-linecap="round" stroke-linejoin="round" d="M4 12l8 4 8-4"></path></svg>
+                                    <svg class="w-8 h-8 mx-auto mb-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7l8 4 8-4"></path><path stroke-linecap="round" stroke-linejoin="round" d="M4 12l8 4 8-4"></path></svg>
                                     <p class="text-xl font-semibold text-color">${pezziRimanenti}</p>
                                     <p class="text-xs uppercase">Rimanenti</p>
                                 </div>
                             </div>`;
                     }
-
-                    resultHTML = `
+                    const resultHTML = `
                         <div class="bg-subtle p-5 rounded-lg text-center">
                             <p class="text-sm font-medium text-muted uppercase tracking-wider">Scatole Totali</p>
                             <p class="text-5xl font-bold text-primary my-2">${scatoleNecessarie}</p>
                             ${breakdownHTML}
                         </div>`;
+                    showResult(resultHTML);
                     success = true;
                 }
-            } else {
-                const scatoleComplete = parseFloat(document.getElementById('scatoleComplete').value);
-                const pezziPerScatola = parseFloat(document.getElementById('pezziPerScatolaInverso').value);
+            } else { // Modalità Inversa
+                const scatoleCompleteInput = document.getElementById('scatoleComplete');
+                const pezziPerScatolaInput = document.getElementById('pezziPerScatolaInverso');
+                const scatoleComplete = parseFloat(scatoleCompleteInput.value);
+                const pezziPerScatola = parseFloat(pezziPerScatolaInput.value);
+                
+                if (isNaN(scatoleComplete) || scatoleComplete < 0) {
+                    scatoleCompleteInput.classList.add('input-error');
+                    validationError = true;
+                }
+                if (isNaN(pezziPerScatola) || pezziPerScatola <= 0) {
+                    pezziPerScatolaInput.classList.add('input-error');
+                    validationError = true;
+                }
 
-                if (isNaN(scatoleComplete) || isNaN(pezziPerScatola) || scatoleComplete < 0 || pezziPerScatola <= 0) {
-                    resultHTML = `<div class="bg-subtle p-4 rounded-lg text-center text-red-400">Inserisci valori validi per scatole e pezzi.</div>`;
-                } else {
-                    let totalIncompletePieces = 0;
-                    let validationError = false;
-                    const incompleteInputs = document.querySelectorAll('.incomplete-box-input');
-                    
-                    incompleteInputs.forEach(input => {
-                        const value = parseFloat(input.value);
-                        if (isNaN(value) || value < 0) validationError = true;
-                        if (value >= pezziPerScatola) {
-                            validationError = true;
-                            resultHTML = `<div class="bg-subtle p-4 rounded-lg text-center text-red-400">Una scatola incompleta non può avere ${pezziPerScatola} o più pezzi.</div>`;
-                        }
-                        if (!validationError) totalIncompletePieces += value;
-                    });
-
-                    if (validationError) {
-                        if (resultHTML === '') resultHTML = `<div class="bg-subtle p-4 rounded-lg text-center text-red-400">Controlla i valori delle scatole incomplete.</div>`;
-                    } else {
-                        const result = (scatoleComplete * pezziPerScatola) + totalIncompletePieces;
-                        resultHTML = `
-                        <div class="bg-subtle p-5 rounded-lg text-center">
-                            <p class="text-sm font-medium text-muted uppercase tracking-wider">Pezzi Totali</p>
-                            <p class="text-5xl font-bold text-primary my-2">${result}</p>
-                        </div>`;
-                        success = true;
+                let totalIncompletePieces = 0;
+                const incompleteInputs = document.querySelectorAll('.incomplete-box-input');
+                
+                incompleteInputs.forEach(input => {
+                    const value = parseFloat(input.value);
+                    if (isNaN(value) || value < 0) { // Validation removed for value >= pezziPerScatola
+                        input.classList.add('input-error');
+                        validationError = true;
+                    } else if (!validationError) {
+                        totalIncompletePieces += value;
                     }
+                });
+
+                if (!validationError) {
+                    const result = (scatoleComplete * pezziPerScatola) + totalIncompletePieces;
+                    const resultHTML = `
+                    <div class="bg-subtle p-5 rounded-lg text-center">
+                        <p class="text-sm font-medium text-muted uppercase tracking-wider">Pezzi Totali</p>
+                        <p class="text-5xl font-bold text-primary my-2">${result}</p>
+                    </div>`;
+                    showResult(resultHTML);
+                    success = true;
                 }
             }
             
-            showResult(resultHTML);
-            if (success) playSound('success');
+            if (success) {
+                playSound('success');
+            } else if (validationError) {
+                playSound('error');
+            }
         }
 
         // --- Event Listeners ---
@@ -441,11 +479,24 @@
         calcolaBtn.addEventListener('click', () => { playSound('click'); calculate(); });
         resetBtn.addEventListener('click', () => { playSound('click'); clearInputs(); });
 
+        themeBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            playSound('click');
+            themeMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!themeMenu.classList.contains('hidden') && !themeMenu.contains(event.target) && !themeBtn.contains(event.target)) {
+                themeMenu.classList.add('hidden');
+            }
+        });
+
         themeOptions.forEach(option => {
             option.addEventListener('click', () => {
                 playSound('click');
                 body.className = body.className.replace(/theme-\w+/g, '');
                 body.classList.add(option.dataset.theme);
+                themeMenu.classList.add('hidden');
             });
         });
 
@@ -456,7 +507,6 @@
             playSound('click');
         });
 
-        // Initialize and set height on load and resize
         window.addEventListener('load', updateUI);
         window.addEventListener('resize', setFormContainerHeight);
 
